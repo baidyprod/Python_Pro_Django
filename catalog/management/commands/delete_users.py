@@ -1,6 +1,8 @@
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q
+
+User = get_user_model()
 
 
 class Command(BaseCommand):
@@ -16,6 +18,6 @@ class Command(BaseCommand):
             raise CommandError('Cannot delete superusers')
 
         users_to_delete_query = Q(pk__in=ids)
-        User.objects.filter(users_to_delete_query).delete()
+        num_deleted, _ = User.objects.filter(users_to_delete_query).delete()
 
-        self.stdout.write(self.style.SUCCESS(f'Deleted {len(ids)} users with primary keys {ids}!'))
+        self.stdout.write(self.style.SUCCESS(f'Deleted {num_deleted} users with primary keys {ids}!'))
